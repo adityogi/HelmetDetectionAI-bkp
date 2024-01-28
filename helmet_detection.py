@@ -17,12 +17,9 @@ from pprint import pprint
 import boto3
 from botocore.exceptions import ClientError
 import numpy as np 
-import cv2
-import os
-import glob
+
 from rekognition_objects import (
     RekognitionLabel,
-    RekognitionText,
 )
 
 logger = logging.getLogger(__name__)
@@ -55,17 +52,7 @@ class RekognitionImage:
             raise
         else:
             return labels
-
-    def detect_text(self):
-        try:
-            response = self.rekognition_client.detect_text(Image=self.image)
-            texts = [RekognitionText(text) for text in response["TextDetections"]]
-            logger.info("Found %s texts in %s.", len(texts), self.image_name)
-        except ClientError:
-            logger.exception("Couldn't detect text in %s.", self.image_name)
-            raise
-        else:
-            return texts
+        
 def check_if_helmet(img_file_name):
     street_scene_image = RekognitionImage.from_file(
         img_file_name, rekognition_client
